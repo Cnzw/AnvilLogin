@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "net.islandearth"
-version = "1.1.4"
+version = "1.1.5"
 
 repositories {
     mavenCentral()
@@ -32,7 +32,9 @@ dependencies {
     compileOnly(":FastLoginBukkit")
 
     implementation("net.wesjd:anvilgui:1.5.3-SNAPSHOT") // anvilgui
-    implementation("com.convallyria.languagy:api:3.0.0") // languagy
+    implementation("com.convallyria.languagy:api:3.0.0") {
+        exclude("com.convallyria.languagy.libs")
+    }
 }
 
 tasks {
@@ -41,10 +43,11 @@ tasks {
     }
 
     shadowJar {
+        minimize()
+        archiveClassifier.set("")
+
         relocate("com.convallyria.languagy", "net.islandearth.anvillogin.libs.languagy")
         relocate("net.wesjd.anvilgui", "net.islandearth.anvillogin.libs.anvilgui")
-
-        archiveClassifier.set("")
     }
 
     build {
