@@ -2,5 +2,5 @@ name: AnvilLogin
 main: net.islandearth.anvillogin.AnvilLogin
 author: SamB440
 version: "${version}"
-softdepend: [Languagy, AuthMe, FastLogin]
+softdepend: [AuthMe, FastLogin, PlaceholderAPI]
 api-version: 1.13

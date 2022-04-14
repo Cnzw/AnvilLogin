@@ -1,15 +1,11 @@
 package net.islandearth.anvillogin;
 
+import com.convallyria.languagy.api.language.Translator;
 import net.islandearth.anvillogin.api.AnvilLoginAPI;
 import net.islandearth.anvillogin.listeners.PlayerListener;
 import net.islandearth.anvillogin.translation.Translations;
-import net.islandearth.languagy.api.language.Language;
-import net.islandearth.languagy.api.language.LanguagyImplementation;
-import net.islandearth.languagy.api.language.LanguagyPluginHook;
-import net.islandearth.languagy.api.language.Translator;
 import net.wesjd.anvilgui.version.VersionMatcher;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -17,9 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class AnvilLogin extends JavaPlugin implements AnvilLoginAPI, LanguagyPluginHook {
+public class AnvilLogin extends JavaPlugin implements AnvilLoginAPI {
     
-    private List<UUID> loggedIn = new ArrayList<>();
+    private final List<UUID> loggedIn = new ArrayList<>();
 
     public List<UUID> getLoggedIn() {
         return loggedIn;
@@ -38,9 +34,8 @@ public class AnvilLogin extends JavaPlugin implements AnvilLoginAPI, LanguagyPlu
         return authme;
     }
 
-    private List<UUID> notLoggedIn = new ArrayList<>();
+    private final List<UUID> notLoggedIn = new ArrayList<>();
 
-    @LanguagyImplementation(Language.ENGLISH)
     private Translator translator;
 
     private boolean authme;
@@ -63,8 +58,10 @@ public class AnvilLogin extends JavaPlugin implements AnvilLoginAPI, LanguagyPlu
 
         plugin = this;
         createFiles();
+
+        this.translator = Translator.of(this).debug(debug());
+
         registerListeners();
-        this.hook(this);
         this.getLogger().info("[AnvilLogin] Enabled & registered events!");
     }
     
@@ -78,14 +75,8 @@ public class AnvilLogin extends JavaPlugin implements AnvilLoginAPI, LanguagyPlu
         pm.registerEvents(new PlayerListener(this), this);
     }
 
-    @Override
     public boolean debug() {
         return this.getConfig().getBoolean("debug");
-    }
-
-    @Override
-    public void onLanguagyHook() {
-        translator.setDisplay(Material.ANVIL);
     }
 
     public static AnvilLoginAPI getAPI() {

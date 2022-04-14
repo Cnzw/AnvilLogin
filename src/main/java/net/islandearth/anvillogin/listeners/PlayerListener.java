@@ -75,20 +75,20 @@ public class PlayerListener implements Listener {
                             player.setLevel(player.getLevel());
                             return AnvilGUI.Response.close();
                         } else {
-                            return AnvilGUI.Response.text(Translations.GUI_WRONG.get(myPlayer));
+                            return AnvilGUI.Response.text(Translations.GUI_WRONG.get(myPlayer).get(0));
                         }
                     })
                     .preventClose()
-                    .text(Translations.GUI_TEXT.get(myPlayer))
+                    .text(Translations.GUI_TEXT.get(myPlayer).get(0))
                     .itemLeft(new ItemStack(Material.ANVIL))
-                    .title(Translations.GUI_TITLE.get(myPlayer))  //only works in 1.14+
+                    .title(Translations.GUI_TITLE.get(myPlayer).get(0))  //only works in 1.14+
                     .plugin(plugin);
             Bukkit.getScheduler().runTaskLater(plugin, () -> anvilGUI.open(myPlayer), 20L);
 
             if (plugin.getConfig().getBoolean("Timeout")) {
                 Bukkit.getScheduler().runTaskLater(plugin, () -> {
                     if (!plugin.getLoggedIn().contains(myPlayer.getUniqueId())) {
-                        myPlayer.kickPlayer(Translations.KICKED.get(myPlayer));
+                        myPlayer.kickPlayer(Translations.KICKED.get(myPlayer).get(0));
                     }
                 }, plugin.getConfig().getLong("Time"));
             }

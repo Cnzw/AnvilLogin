@@ -1,7 +1,12 @@
 package net.islandearth.anvillogin.translation;
 
+import com.convallyria.languagy.api.language.Language;
+import com.convallyria.languagy.api.language.key.LanguageKey;
+import com.convallyria.languagy.api.language.key.TranslationKey;
+import com.convallyria.languagy.api.language.translation.Translation;
+import me.clip.placeholderapi.PlaceholderAPI;
 import net.islandearth.anvillogin.AnvilLogin;
-import net.islandearth.languagy.api.language.Language;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -11,27 +16,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public enum Translations {
-	KICKED("&7[&9AnvilLogin&7] &cYou have been kicked for not entering the password within 30 seconds."),
-	LOGGED_IN("&7[&9AnvilLogin&7] &aYou logged in to the server!"),
-	GUI_TITLE("Enter Password"),
-	GUI_TEXT("Enter Password"),
-	GUI_WRONG("Incorrect.");
+	KICKED(TranslationKey.of("kicked")),
+	LOGGED_IN(TranslationKey.of("logged_in")),
+	GUI_TITLE(TranslationKey.of("gui_title")),
+	GUI_TEXT(TranslationKey.of("gui_text")),
+	GUI_WRONG(TranslationKey.of("gui_wrong"));
 
-	private final String defaultValue;
+	private final TranslationKey key;
 	private final boolean isList;
-	
-	Translations(String defaultValue) {
-		this.defaultValue = defaultValue;
-		this.isList = false;
-	}
 
-	Translations(String defaultValue, boolean isList) {
-		this.defaultValue = defaultValue;
-		this.isList = isList;
-	}
-	
-	public String getDefaultValue() {
-		return defaultValue;
+	Translations(TranslationKey key) {
+		this.key = key;
+		this.isList = false;
 	}
 
 	public boolean isList() {
@@ -42,82 +38,61 @@ public enum Translations {
 		return this.toString().toLowerCase();
 	}
 
-	public void send(Player player) {
-		String message = AnvilLogin.getAPI().getTranslator().getTranslationFor(player, this.getPath());
-		player.sendMessage(message);
+	public void send(Player player, Object... values) {
+		final Translation translation = AnvilLogin.getAPI().getTranslator().getTranslationFor(player, key);
+		for (String translationString : translation.colour()) {
+			player.sendMessage(this.setPapi(player, replaceVariables(translationString, values)));
+		}
 	}
 
-	public void send(Player player, String... values) {
-		String message = AnvilLogin.getAPI().getTranslator().getTranslationFor(player, this.getPath());
-		message = replaceVariables(message, values);
-		player.sendMessage(message);
+	public List<String> get(Player player, Object... values) {
+		final Translation translation = AnvilLogin.getAPI().getTranslator().getTranslationFor(player, key);
+		List<String> transformed = new ArrayList<>();
+		for (String translationString : translation.colour()) {
+			transformed.add(this.setPapi(player, replaceVariables(translationString, values)));
+		}
+		return transformed;
 	}
 
-	public void sendList(Player player) {
-		List<String> message = AnvilLogin.getAPI().getTranslator().getTranslationListFor(player, this.getPath());
-		message.forEach(player::sendMessage);
-	}
-
-	public void sendList(Player player, String... values) {
-		List<String> messages = AnvilLogin.getAPI().getTranslator().getTranslationListFor(player, this.getPath());
-		messages.forEach(message -> {
-			message = replaceVariables(message, values);
-			player.sendMessage(message);
-		});
-	}
-
-	public String get(Player player) {
-		return AnvilLogin.getAPI().getTranslator().getTranslationFor(player, this.getPath());
-	}
-	
-	public String get(Player player, String... values) {
-		String message = AnvilLogin.getAPI().getTranslator().getTranslationFor(player, this.getPath());
-		message = replaceVariables(message, values);
-		return message;
-	}
-
-	public List<String> getList(Player player) {
-		return AnvilLogin.getAPI().getTranslator().getTranslationListFor(player, this.getPath());
-	}
-
-	public List<String> getList(Player player, String... values) {
-		List<String> messages = new ArrayList<>();
-		AnvilLogin.getAPI().getTranslator()
-				.getTranslationListFor(player, this.getPath())
-				.forEach(message -> messages.add(replaceVariables(message, values)));
-		return messages;
-	}
-	
 	public static void generateLang(AnvilLogin plugin) {
 		File lang = new File(plugin.getDataFolder() + "/lang/");
 		lang.mkdirs();
-		
+
 		for (Language language : Language.values()) {
+			final LanguageKey languageKey = language.getKey();
 			try {
-				plugin.saveResource("lang/" + language.getCode() + ".yml", false);
-				plugin.getLogger().info("Generated " + language.getCode() + ".yml");
+				plugin.saveResource("lang/" + languageKey.getCode() + ".yml", false);
+				plugin.getLogger().info("Generated " + languageKey.getCode() + ".yml");
 			} catch (IllegalArgumentException ignored) { }
 
-			File file = new File(plugin.getDataFolder() + "/lang/" + language.getCode() + ".yml");
+			File file = new File(plugin.getDataFolder() + "/lang/" + languageKey.getCode() + ".yml");
 			if (file.exists()) {
 				FileConfiguration config = YamlConfiguration.loadConfiguration(file);
 				for (Translations key : values()) {
 					if (config.get(key.toString().toLowerCase()) == null) {
 						plugin.getLogger().warning("No value in translation file for key "
-								+ key.toString() + " was found. Regenerate language files?");
+								+ key + " was found. Please regenerate or edit your language files with new values!");
 					}
 				}
 			}
 		}
 	}
 
-	private String replaceVariables(String message, String... values) {
+	private String replaceVariables(String message, Object... values) {
 		String modifiedMessage = message;
 		for (int i = 0; i < 10; i++) {
-			if (values.length > i) modifiedMessage = modifiedMessage.replaceAll("%" + i, values[i]);
+			if (values.length > i) modifiedMessage = modifiedMessage.replaceAll("%" + i, String.valueOf(values[i]));
 			else break;
 		}
 
 		return modifiedMessage;
+	}
+
+	private String setPapi(Player player, String message) {
+		if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+			return PlaceholderAPI.setPlaceholders(player, message);
+		}
+
+		return message;
 	}
 }

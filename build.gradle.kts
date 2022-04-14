@@ -10,8 +10,9 @@ repositories {
     mavenCentral()
 
     maven("https://erethon.de/repo/")
-    maven("https://repo.convallyria.com/snapshots")
+    maven("https://repo.convallyria.com/releases/")
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
+    maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
 
     maven {
         name = "codemc-snapshots"
@@ -25,12 +26,13 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.8.2")
 
-    compileOnly("org.spigotmc:spigot-api:1.18.1-R0.1-SNAPSHOT")
+    compileOnly("org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT")
+    compileOnly("me.clip:placeholderapi:2.11.1")
     compileOnly("fr.xephi:authme:5.6.0-SNAPSHOT")
     compileOnly(":FastLoginBukkit")
 
     implementation("net.wesjd:anvilgui:1.5.3-SNAPSHOT") // anvilgui
-    implementation("net.islandearth:languagy:2.0.4-SNAPSHOT") // languagy
+    implementation("com.convallyria.languagy:api:3.0.0") // languagy
 }
 
 tasks {
@@ -39,7 +41,7 @@ tasks {
     }
 
     shadowJar {
-        relocate("net.islandearth.languagy", "net.islandearth.anvillogin.libs.languagy")
+        relocate("com.convallyria.languagy", "net.islandearth.anvillogin.libs.languagy")
         relocate("net.wesjd.anvilgui", "net.islandearth.anvillogin.libs.anvilgui")
 
         archiveClassifier.set("")
