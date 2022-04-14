@@ -16,3 +16,5 @@ debug: false
 fastlogin: true
 # Whether to display login messages or not
 login_messages: true
+# The default language to use, see https://www.convallyria.com/javadoc/languagy/com/convallyria/languagy/api/language/Language.html
+default_language: ENGLISH

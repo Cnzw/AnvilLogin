@@ -1,6 +1,8 @@
 package net.islandearth.anvillogin;
 
+import com.convallyria.languagy.api.language.Language;
 import com.convallyria.languagy.api.language.Translator;
+import com.google.common.base.Enums;
 import net.islandearth.anvillogin.api.AnvilLoginAPI;
 import net.islandearth.anvillogin.listeners.PlayerListener;
 import net.islandearth.anvillogin.translation.Translations;
@@ -59,10 +61,16 @@ public class AnvilLogin extends JavaPlugin implements AnvilLoginAPI {
         plugin = this;
         createFiles();
 
-        this.translator = Translator.of(this).debug(debug());
+        final Language defaultLanguage = Enums.getIfPresent(Language.class, getConfig().getString("default_language", "ENGLISH")).or(Language.ENGLISH);
+        this.translator = Translator.of(this, defaultLanguage).debug(debug());
 
         registerListeners();
         this.getLogger().info("[AnvilLogin] Enabled & registered events!");
+    }
+
+    @Override
+    public void onDisable() {
+        translator.close();
     }
     
     private void createFiles() {
