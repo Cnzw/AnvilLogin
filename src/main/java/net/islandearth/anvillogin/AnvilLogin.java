@@ -70,7 +70,7 @@ public class AnvilLogin extends JavaPlugin implements AnvilLoginAPI {
 
     @Override
     public void onDisable() {
-        translator.close();
+        if (translator != null) translator.close();
     }
     
     private void createFiles() {
