@@ -43,7 +43,6 @@ tasks {
     }
 
     shadowJar {
-        minimize()
         archiveClassifier.set("")
 
         relocate("com.convallyria.languagy", "net.islandearth.anvillogin.libs.languagy")
