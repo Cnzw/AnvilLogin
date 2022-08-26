@@ -62,7 +62,7 @@ public class AnvilLogin extends JavaPlugin implements AnvilLoginAPI {
         createFiles();
 
         final Language defaultLanguage = Enums.getIfPresent(Language.class, getConfig().getString("default_language", "ENGLISH")).or(Language.ENGLISH);
-        this.translator = Translator.of(this, defaultLanguage).debug(debug());
+        this.translator = Translator.of(this, "lang", defaultLanguage, debug());
 
         registerListeners();
         this.getLogger().info("[AnvilLogin] Enabled & registered events!");

@@ -16,5 +16,23 @@ debug: false
 fastlogin: true
 # Whether to display login messages or not
 login_messages: true
+
+# The item to display in the left anvil slot
+# Left slot cannot use name as it is used for the anvil text
+# See lang/en_gb to modify anvil text
+left_slot:
+  type: ANVIL
+  model: 0
+  lore: []
+
+# The item to display in the right anvil slot
+# Note that this needs to be combinable with the left item for the player to be able to input the password
+# This is a vanilla limitation
+right_slot:
+  type: AIR
+  name: ""
+  model: 0
+  lore: []
+
 # The default language to use, see https://www.convallyria.com/javadoc/languagy/com/convallyria/languagy/api/language/Language.html
 default_language: ENGLISH

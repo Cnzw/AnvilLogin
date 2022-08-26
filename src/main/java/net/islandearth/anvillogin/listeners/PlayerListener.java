@@ -1,12 +1,17 @@
 package net.islandearth.anvillogin.listeners;
 
+import com.convallyria.languagy.api.language.Language;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.core.PremiumStatus;
+import com.google.common.base.Enums;
 import fr.xephi.authme.api.v3.AuthMeApi;
 import net.islandearth.anvillogin.AnvilLogin;
 import net.islandearth.anvillogin.translation.Translations;
+import net.islandearth.anvillogin.util.Colors;
+import net.islandearth.anvillogin.util.ItemStackBuilder;
 import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -16,7 +21,11 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PlayerListener implements Listener {
 
@@ -52,6 +61,29 @@ public class PlayerListener implements Listener {
             }
 
             plugin.getNotLoggedIn().add(myPlayer.getUniqueId());
+
+            List<String> colouredLeftLore = new ArrayList<>();
+            for (String leftLore : plugin.getConfig().getStringList("left_slot.lore")) {
+                colouredLeftLore.add(Colors.color(leftLore));
+            }
+
+            List<String> colouredRightLore = new ArrayList<>();
+            for (String rightLore : plugin.getConfig().getStringList("right_slot.lore")) {
+                colouredRightLore.add(Colors.color(rightLore));
+            }
+
+            final ItemStack leftItem = ItemStackBuilder.of(Enums.getIfPresent(Material.class, plugin.getConfig().getString("left_slot.type", "ANVIL")).or(Material.ANVIL))
+                    .addFlags(ItemFlag.HIDE_ATTRIBUTES)
+                    .withLore(colouredLeftLore)
+                    .withModel(plugin.getConfig().getInt("left_slot.model")).build();
+
+            final Material rightType = Enums.getIfPresent(Material.class, plugin.getConfig().getString("right_slot.type", "AIR")).or(Material.AIR);
+            final ItemStack rightItem = rightType == Material.AIR ? new ItemStack(Material.AIR) : ItemStackBuilder.of(rightType)
+                    .addFlags(ItemFlag.HIDE_ATTRIBUTES)
+                    .withLore(colouredRightLore)
+                    .withName(Colors.color(plugin.getConfig().getString("right_slot.name", "")))
+                    .withModel(plugin.getConfig().getInt("right_slot.model")).build();
+
             AnvilGUI.Builder anvilGUI = new AnvilGUI.Builder()
                     .onComplete((player, text) -> {
                         if (plugin.isAuthme() && plugin.getConfig().getBoolean("register") && !AuthMeApi.getInstance().isRegistered(player.getName())) {
@@ -80,7 +112,8 @@ public class PlayerListener implements Listener {
                     })
                     .preventClose()
                     .text(Translations.GUI_TEXT.get(myPlayer).get(0))
-                    .itemLeft(new ItemStack(Material.ANVIL))
+                    .itemLeft(leftItem)
+                    .itemRight(rightItem)
                     .title(Translations.GUI_TITLE.get(myPlayer).get(0))  //only works in 1.14+
                     .plugin(plugin);
             Bukkit.getScheduler().runTaskLater(plugin, () -> anvilGUI.open(myPlayer), 20L);
