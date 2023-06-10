@@ -2,4 +2,4 @@ kicked: "&7[&9AnvilLogin&7] &cYou have been kicked for not entering the password
 logged_in: "&7[&9AnvilLogin&7] &aYou logged in to the server!"
 gui_title: "Enter Password"
 gui_text: "Enter Password"
-gui_wrong: "Incorrect."
+gui_wrong: "&cIncorrect."

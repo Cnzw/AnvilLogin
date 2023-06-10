@@ -25,6 +25,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class PlayerListener implements Listener {
@@ -38,7 +39,8 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent pje) {
         Player myPlayer = pje.getPlayer();
-        if (!myPlayer.hasPermission("AnvilLogin.bypass")
+        if ((plugin.getConfig().getBoolean("disable-op-bypass", true)
+                || !myPlayer.hasPermission("AnvilLogin.bypass"))
                 && !plugin.getLoggedIn().contains(myPlayer.getUniqueId())) {
             if (plugin.isAuthme()
                     && (AuthMeApi.getInstance().isAuthenticated(myPlayer) || AuthMeApi.getInstance().isUnrestricted(myPlayer))) {
@@ -85,7 +87,13 @@ public class PlayerListener implements Listener {
                     .withModel(plugin.getConfig().getInt("right_slot.model")).build();
 
             AnvilGUI.Builder anvilGUI = new AnvilGUI.Builder()
-                    .onComplete((player, text) -> {
+                    .onClick((slot, snapshot) -> {
+                        if (slot != AnvilGUI.Slot.OUTPUT) {
+                            return Collections.emptyList();
+                        }
+
+                        final Player player = snapshot.getPlayer();
+                        final String text = snapshot.getText();
                         if (plugin.isAuthme() && plugin.getConfig().getBoolean("register") && !AuthMeApi.getInstance().isRegistered(player.getName())) {
                             AuthMeApi.getInstance().forceRegister(player, text, true);
                             plugin.getLoggedIn().add(player.getUniqueId());
@@ -93,7 +101,7 @@ public class PlayerListener implements Listener {
                             if (plugin.getConfig().getBoolean("login_messages")) {
                                 Translations.LOGGED_IN.send(player);
                             }
-                            return AnvilGUI.Response.close();
+                            return List.of(AnvilGUI.ResponseAction.close());
                         }
 
                         if (text.equalsIgnoreCase(plugin.getConfig().getString("Password"))
@@ -105,9 +113,9 @@ public class PlayerListener implements Listener {
                             }
                             if (plugin.isAuthme()) AuthMeApi.getInstance().forceLogin(player);
                             player.setLevel(player.getLevel());
-                            return AnvilGUI.Response.close();
+                            return List.of(AnvilGUI.ResponseAction.close());
                         } else {
-                            return AnvilGUI.Response.text(Translations.GUI_WRONG.get(myPlayer).get(0));
+                            return List.of(AnvilGUI.ResponseAction.replaceInputText(Translations.GUI_WRONG.get(myPlayer).get(0)));
                         }
                     })
                     .preventClose()

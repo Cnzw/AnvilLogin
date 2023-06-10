@@ -34,5 +34,8 @@ right_slot:
   model: 0
   lore: []
 
+# If this is enabled, everyone must enter a password regardless of permissions
+disable-op-bypass: true
+
 # The default language to use, see https://www.convallyria.com/javadoc/languagy/com/convallyria/languagy/api/language/Language.html
-default_language: ENGLISH
+default_language: BRITISH_ENGLISH

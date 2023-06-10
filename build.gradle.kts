@@ -1,10 +1,10 @@
 plugins {
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
     id("java")
 }
 
 group = "net.islandearth"
-version = "1.1.7"
+version = "1.1.8"
 
 repositories {
     mavenCentral()
@@ -26,13 +26,13 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.9.0")
 
-    compileOnly("org.spigotmc:spigot-api:1.19.2-R0.1-SNAPSHOT")
-    compileOnly("me.clip:placeholderapi:2.11.1")
+    compileOnly("org.spigotmc:spigot-api:1.20-R0.1-SNAPSHOT")
+    compileOnly("me.clip:placeholderapi:2.11.3")
     compileOnly("fr.xephi:authme:5.6.0-SNAPSHOT")
     compileOnly(":FastLoginBukkit")
 
-    implementation("net.wesjd:anvilgui:1.5.3-SNAPSHOT") // anvilgui
-    implementation("com.convallyria.languagy:api:3.0.1") {
+    implementation("net.wesjd:anvilgui:1.6.6-SNAPSHOT") // anvilgui
+    implementation("com.convallyria.languagy:api:3.0.2") {
         exclude("com.convallyria.languagy.libs")
     }
 }
