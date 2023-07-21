@@ -15,6 +15,7 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: '8'
+    - run: git update-index --chmod=+x ./gradlew
     - name: Build
       run: ./gradlew build --stacktrace
     - name: Upload
